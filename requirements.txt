@@ -1,5 +1,5 @@
 streamlit
-ultralytics
+ultralytics==8.1.2
 opencv-python-headless
 pillow
 pytesseract
