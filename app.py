@@ -42,6 +42,17 @@ conf = st.sidebar.slider("Detection Confidence", 0.1, 0.9, 0.25, 0.05)
 psm = st.sidebar.selectbox("Tesseract PSM", [3, 6, 7, 8], index=2)
 lang = st.sidebar.text_input("OCR Language", value="eng")
 st.sidebar.markdown("---")
+
+# Bounding box customization
+bbox_color_name = st.sidebar.selectbox("Bounding Box Color", ["Red", "Green", "Blue", "Yellow", "Cyan"])
+text_color_name = st.sidebar.selectbox("Label Text Color", ["Red", "Green", "Blue", "Yellow", "Cyan", "White"])
+bbox_thickness = st.sidebar.slider("Bounding Box Thickness", 1, 10, 3)
+text_scale = st.sidebar.slider("Label Font Scale", 0.5, 2.0, 0.9, 0.1)
+
+colors = {"Red":(0,0,255), "Green":(0,255,0), "Blue":(255,0,0), "Yellow":(0,255,255), "Cyan":(255,255,0), "White":(255,255,255)}
+bbox_color = colors[bbox_color_name]
+text_color = colors[text_color_name]
+
 st.sidebar.write("👨‍💻 Developed by Asiful Islam")
 st.sidebar.markdown("---")
 
@@ -123,8 +134,8 @@ if detect_btn and st.session_state.input_image:
                 plate_text = ocr_image(crop, psm=psm, lang=lang)
 
                 display_text = f"{plate_text} ({conf_score:.2f})" if plate_text else f"({conf_score:.2f})"
-                cv2.rectangle(img_cv, (x1, y1), (x2, y2), (0,255,0), 2)
-                cv2.putText(img_cv, display_text, (x1, y1-15), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,0), 2)
+                cv2.rectangle(img_cv, (x1, y1), (x2, y2), bbox_color, bbox_thickness)
+                cv2.putText(img_cv, display_text, (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, text_scale, text_color, 2)
 
                 saved_path = save_cropped_image(crop, CAPTURE_DIR, "plate")
                 insert_detection(conn, saved_path, plate_text, conf_score)
